@@ -1,0 +1,126 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Cliente {
+  id      String  @id @default(uuid()) 
+  name    String
+  email   String  @unique
+  phone   String
+  cedula  String  @unique 
+  
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+  @@map("clientes")
+}
+
+model User {
+  id            String  @id @default(uuid())
+  name          String?
+  email         String  @unique
+  password      String?
+  phone         String
+  cedula        String  @unique
+  role          Role    @default(USER)
+  isActive      Boolean @default(false)
+  image         String?
+  emailVerified DateTime?
+
+  cliente       Cliente?
+  cards         Card[]
+  accounts      Account[]
+  sessions      Session[]
+  Authenticator Authenticator[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Card {
+  id        String  @id @default(uuid())
+  userId    String
+  data      Json
+  createdAt DateTime @default(now())
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  securityCode SecurityCode?
+
+  @@map("cards")
+}
+
+model SecurityCode {
+  id        String  @id @default(uuid())
+  cardId    String  @unique
+  code      String  @unique
+  usedCount Int     @default(0)
+  lastUsedAt DateTime?
+  card      Card    @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@map("security_codes")
+}
+
+// 🔐 Modelos de Auth.js para autenticación
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}
+
+enum Role {
+  ADMIN
+  USER
+}

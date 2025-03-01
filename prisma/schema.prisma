@@ -8,59 +8,61 @@ generator client {
 }
 
 model Cliente {
-  id      String  @id @default(uuid()) 
-  name    String
-  email   String  @unique
-  phone   String
-  cedula  String  @unique 
-  
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String @unique
+  id     String @id @default(uuid())
+  name   String
+  email  String @unique
+  phone  String
+  cedula String @unique
+
+  userId String? @unique // Ahora puede ser NULL hasta que se asigne un usuario
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("clientes")
 }
 
 model User {
-  id            String  @id @default(uuid())
+  id            String    @id @default(uuid())
   name          String?
-  email         String  @unique
+  email         String    @unique
   password      String?
   phone         String
-  cedula        String  @unique
-  role          Role    @default(USER)
-  isActive      Boolean @default(false)
+  cedula        String    @unique
+  role          Role      @default(USER)
+  isActive      Boolean   @default(false)
   image         String?
   emailVerified DateTime?
 
-  cliente       Cliente?
-  cards         Card[]
+  cliente Cliente?
+
   accounts      Account[]
   sessions      Session[]
   Authenticator Authenticator[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Card      Card[]
 
   @@map("users")
 }
 
 model Card {
-  id        String  @id @default(uuid())
-  userId    String
-  data      Json
-  createdAt DateTime @default(now())
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String        @id @default(uuid())
+  userId       String
+  data         Json
+  createdAt    DateTime      @default(now())
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   securityCode SecurityCode?
 
   @@map("cards")
 }
 
 model SecurityCode {
-  id        String  @id @default(uuid())
-  cardId    String  @unique
-  code      String  @unique
-  usedCount Int     @default(0)
+  id         String    @id @default(uuid())
+  cardId     String    @unique
+  code       String    @unique
+  usedCount  Int       @default(0)
   lastUsedAt DateTime?
-  card      Card    @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  card       Card      @relation(fields: [cardId], references: [id], onDelete: Cascade)
 
   @@map("security_codes")
 }

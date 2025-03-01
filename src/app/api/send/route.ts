@@ -1,33 +1,35 @@
-import { EmailTemplate } from '@/components'
-import { Resend } from 'resend'
+import { NextResponse } from 'next/server'
+import nodemailer from 'nodemailer'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    const { email, name } = await req.json() // 📌 Recibir email y nombre del usuario
+    const { to, subject, text, html } = await request.json()
 
-    if (!email) {
-      return Response.json({ error: 'Email requerido' }, { status: 400 })
-    }
-
-    const { data, error } = await resend.emails.send({
-      from: 'onboarding@resend.dev', // 📌 Cambia por un dominio verificado en Resend
-      to: ['mateoicecua2000@gmail.com'], // 📌 Ahora usa el email dinámico
-      subject: 'Activa tu cuenta en TuEmpresa',
-      react: EmailTemplate({ firstName: name }) as React.ReactElement, // 📌 Usa el template con datos dinámicos
+    // Create a transporter using a free SMTP service
+    // For Gmail, you'll need to use an "App Password" if you have 2FA enabled
+    const transporter = nodemailer.createTransport({
+      service: 'gmail', // or 'outlook', etc.
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
     })
 
-    if (error) {
-      return Response.json({ error }, { status: 500 })
-    }
+    // Send the email
+    const info = await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to,
+      subject,
+      text,
+      html,
+    })
 
-    return Response.json({ message: 'Correo enviado', data })
+    return NextResponse.json({
+      success: true,
+      messageId: info.messageId,
+    })
   } catch (error) {
-    console.error('Error al enviar el correo:', error)
-    return Response.json(
-      { error: 'Error interno del servidor' },
-      { status: 500 }
-    )
+    console.error('Error sending email:', error)
+    return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
   }
 }

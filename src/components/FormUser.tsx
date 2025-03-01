@@ -1,8 +1,7 @@
 'use client'
-import Link from 'next/link'
 import clsx from 'clsx'
-import React, { useState } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { useState } from 'react'
+import { type SubmitHandler, useForm } from 'react-hook-form'
 import { registerClients } from '@/actions/register'
 
 type FormInputs = {
@@ -14,6 +13,7 @@ type FormInputs = {
 
 export const FormUser = () => {
   const [errorMessage, setErrorMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const {
     register,
     handleSubmit,
@@ -22,30 +22,40 @@ export const FormUser = () => {
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     setErrorMessage('')
+    setIsLoading(true)
     const { name, email, phone, cedula } = data
 
-    // Server action
-    const resp = await registerClients(name, email, phone, cedula)
-
-    if (!resp.ok) {
-      setErrorMessage(resp.message)
-      return
-    }
     try {
-      const emailResponse = await fetch('/api/send', {
-        method: 'POST',
-        body: JSON.stringify({ email, name }),
-        headers: { 'Content-Type': 'application/json' },
-      })
+      // Server action to register client
+      const resp = await registerClients(name, email, phone, cedula)
 
-      const result = await emailResponse.json()
-      if (!emailResponse.ok) {
-        throw new Error(result.error || 'Error al enviar el correo')
+      if (!resp.ok) {
+        throw new Error(resp.message || 'Error registering client')
       }
 
+      // Send email using the API
+      const emailResponse = await fetch('/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: email,
+          subject: 'Welcome to Our Service',
+          text: `Hello ${name}, thank you for registering!`,
+          html: `<p>Hello ${name},</p><p>Thank you for registering!</p>`,
+        }),
+      })
+
+      if (!emailResponse.ok) {
+        const errorData = await emailResponse.json()
+        throw new Error(errorData.error || 'Error sending email')
+      }
+
+      // If everything is successful, redirect
       window.location.replace('/diyi')
     } catch (error: any) {
-      setErrorMessage(error.message || 'Ocurrió un error al enviar el correo.')
+      setErrorMessage(error.message || 'An unexpected error occurred.')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -55,11 +65,12 @@ export const FormUser = () => {
         <span className="text-red-500">* El nombre es obligatorio</span>
       )}
 
-      <label htmlFor="email">Nombre completo</label>
+      <label htmlFor="name">Nombre completo</label>
       <input
+        id="name"
         className={clsx(
           'px-5 py-2 border rounded mb-5 text-black placeholder-gray-500',
-          'bg-white dark:bg-gray-800 dark:text-white border-gray-300 ',
+          'bg-white dark:bg-gray-800 dark:text-white border-gray-300',
           {
             'border-red-500': errors.name,
           }
@@ -71,9 +82,10 @@ export const FormUser = () => {
 
       <label htmlFor="email">Correo electrónico</label>
       <input
+        id="email"
         className={clsx(
           'px-5 py-2 border rounded mb-5 text-black placeholder-gray-500',
-          'bg-white dark:bg-gray-800 dark:text-white border-gray-300 ',
+          'bg-white dark:bg-gray-800 dark:text-white border-gray-300',
           {
             'border-red-500': errors.email,
           }
@@ -81,8 +93,10 @@ export const FormUser = () => {
         type="email"
         {...register('email', { required: true, pattern: /^\S+@\S+$/i })}
       />
+
       <label htmlFor="phone">Telefono</label>
       <input
+        id="phone"
         className={clsx(
           'px-5 py-2 border rounded mb-5 text-black placeholder-gray-500',
           'bg-white dark:bg-gray-800 dark:text-white border-gray-300',
@@ -100,6 +114,7 @@ export const FormUser = () => {
 
       <label htmlFor="cedula">Cédula</label>
       <input
+        id="cedula"
         className={clsx(
           'px-5 py-2 border rounded mb-5 text-black placeholder-gray-500',
           'bg-white dark:bg-gray-800 dark:text-white border-gray-300',
@@ -112,13 +127,23 @@ export const FormUser = () => {
         {...register('cedula', {
           required: true,
           minLength: 6,
-          pattern: /^[0-9]+$/, // ✅ Solo permite números
+          pattern: /^[0-9]+$/, // Only allows numbers
         })}
       />
 
-      <span className="text-red-500">{errorMessage} </span>
+      {errorMessage && (
+        <span className="text-red-500 mb-3">{errorMessage}</span>
+      )}
 
-      <button className="btn-primary">Crear Cliente</button>
+      <button
+        type="submit"
+        className={clsx('btn-primary', {
+          'opacity-50 cursor-not-allowed': isLoading,
+        })}
+        disabled={isLoading}
+      >
+        {isLoading ? 'Procesando...' : 'Crear Cliente'}
+      </button>
 
       <div className="flex items-center my-5">
         <div className="flex-1 border-t border-gray-500"></div>

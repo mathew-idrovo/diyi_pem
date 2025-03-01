@@ -11,33 +11,26 @@ export const registerClients = async (
   cedula: string
 ) => {
   try {
-    const user = await prisma.cliente.create({
-      data: {
-        name: name,
-        email: email.toLowerCase(),
-        phone: phone,
-        cedula: cedula,
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        cedula: true,
-      },
+    // 📌 Verificar si el email ya existe
+    const existingClient = await prisma.cliente.findUnique({
+      where: { email },
     })
 
-    return {
-      ok: true,
-      user: user,
-      message: 'Cliente creado',
+    if (existingClient) {
+      return { ok: false, message: 'El email ya está registrado.' }
     }
-  } catch (error) {
-    console.log(error)
 
+    // 📌 Crear nuevo cliente
+    const client = await prisma.cliente.create({
+      data: { name, email: email.toLowerCase(), phone, cedula },
+    })
+
+    return { ok: true, message: 'Cliente creado exitosamente.', client }
+  } catch (error) {
+    console.error('❌ Error al registrar cliente:', error)
     return {
       ok: false,
-      message: 'No se pudo crear el cliente',
+      message: 'Error en el servidor al registrar el cliente.',
     }
   }
 }

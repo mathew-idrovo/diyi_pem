@@ -31,8 +31,22 @@ export const FormUser = () => {
       setErrorMessage(resp.message)
       return
     }
+    try {
+      const emailResponse = await fetch('/api/send', {
+        method: 'POST',
+        body: JSON.stringify({ email, name }),
+        headers: { 'Content-Type': 'application/json' },
+      })
 
-    window.location.replace('/diyi')
+      const result = await emailResponse.json()
+      if (!emailResponse.ok) {
+        throw new Error(result.error || 'Error al enviar el correo')
+      }
+
+      window.location.replace('/diyi')
+    } catch (error: any) {
+      setErrorMessage(error.message || 'Ocurrió un error al enviar el correo.')
+    }
   }
 
   return (

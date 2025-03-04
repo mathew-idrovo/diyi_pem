@@ -42,16 +42,17 @@ export const authConfig: NextAuthConfig = {
 
         const { email, password } = parsedCredentials.data
 
-        // Buscar el correo
+        //Buscar el correo
         const user = await prisma.user.findUnique({
           where: { email: email.toLowerCase() },
         })
         if (!user) return null
 
-        // Comparar las contraseñas
-        // if (!bcryptjs.compareSync(password, user.password)) return null
+        //Comparar las contraseñas
+        if (!user.password || !bcryptjs.compareSync(password, user.password))
+          return null
 
-        // Regresar el usuario sin el password
+        //Regresar el usuario sin el password
         const { password: _, ...rest } = user
 
         return rest

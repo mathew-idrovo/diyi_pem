@@ -3,6 +3,8 @@ import clsx from 'clsx'
 import { useState } from 'react'
 import { type SubmitHandler, useForm } from 'react-hook-form'
 import { registerClients } from '@/actions/register'
+import { logout } from '@/actions'
+import { IoLogOutOutline } from 'react-icons/io5'
 
 type FormInputs = {
   name: string
@@ -150,6 +152,13 @@ export const FormUser = () => {
         <div className="px-2 text-gray-800">O</div>
         <div className="flex-1 border-t border-gray-500"></div>
       </div>
+      <button
+        className="flex w-full items-center mt-10 p-2 hover:bg-gray-100 rounded transition-all"
+        onClick={() => logout()}
+      >
+        <IoLogOutOutline size={30} />
+        <span className="ml-3 text-xl">Salir</span>
+      </button>
     </form>
   )
 }

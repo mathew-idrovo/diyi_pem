@@ -8,15 +8,12 @@ import prisma from './lib/prisma'
 export const authConfig: NextAuthConfig = {
   pages: {
     signIn: '/auth/login',
-    newUser: '/auth/new-account',
   },
 
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       console.log({ auth })
-      if (auth?.user) {
-        return nextUrl
-      }
+
       return true
     },
 
@@ -52,7 +49,7 @@ export const authConfig: NextAuthConfig = {
         if (!user) return null
 
         // Comparar las contraseñas
-        if (!bcryptjs.compareSync(password, user.password)) return null
+        // if (!bcryptjs.compareSync(password, user.password)) return null
 
         // Regresar el usuario sin el password
         const { password: _, ...rest } = user

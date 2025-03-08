@@ -7,13 +7,6 @@ export async function POST(request: Request) {
 
     // Create a transporter using a free SMTP service
     // For Gmail, you'll need to use an "App Password" if you have 2FA enabled
-    const transporter = nodemailer.createTransport({
-      service: 'gmail', // or 'outlook', etc.
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    })
 
     // Send the email
     const info = await transporter.sendMail({

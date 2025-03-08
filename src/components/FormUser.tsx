@@ -5,6 +5,7 @@ import { type SubmitHandler, useForm } from 'react-hook-form'
 import { registerClients } from '@/actions/register'
 import { logout } from '@/actions'
 import { IoLogOutOutline } from 'react-icons/io5'
+import { generateVerificationToken } from '@/actions/verification'
 
 type FormInputs = {
   name: string
@@ -36,23 +37,13 @@ export const FormUser = () => {
       }
 
       // Send email using the API
-      const emailResponse = await fetch('/api/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: email,
-          subject: 'Welcome to Our Service',
-          text: `Hello ${name}, thank you for registering!`,
-          html: `<p>Hello ${name},</p><p>Thank you for registering!</p>`,
-        }),
-      })
+      const emailResponse = await generateVerificationToken(email)
 
-      if (!emailResponse.ok) {
-        const errorData = await emailResponse.json()
-        throw new Error(errorData.error || 'Error sending email')
+      if (!emailResponse.message) {
+        throw new Error(emailResponse.message || 'Error enviando email')
       }
 
-      // If everything is successful, redirect
+      // 3️⃣ Redirigir después de enviar el correo
       window.location.replace('/diyi')
     } catch (error: any) {
       setErrorMessage(error.message || 'An unexpected error occurred.')

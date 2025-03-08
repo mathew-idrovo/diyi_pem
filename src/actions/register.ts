@@ -1,8 +1,8 @@
 'use server'
 
+import transporter from '@/lib/nodemailer'
 import prisma from '@/lib/prisma'
-import bcryptjs from 'bcryptjs'
-import { use } from 'react'
+import crypto from 'crypto'
 
 export const registerClients = async (
   name: string,

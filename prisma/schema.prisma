@@ -101,6 +101,7 @@ model Session {
 
 model VerificationToken {
   identifier String
+  email      String   @unique
   token      String
   expires    DateTime
 

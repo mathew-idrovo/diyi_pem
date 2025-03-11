@@ -100,12 +100,12 @@ model Session {
 }
 
 model VerificationToken {
-  identifier String
-  email      String   @unique
-  token      String
-  expires    DateTime
+  id      String   @default(uuid())
+  email   String   @unique
+  token   String   @unique
+  expires DateTime
 
-  @@id([identifier, token])
+  @@id([token])
 }
 
 model Authenticator {

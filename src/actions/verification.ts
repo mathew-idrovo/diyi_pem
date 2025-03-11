@@ -11,7 +11,7 @@ export const generateVerificationToken = async (email: string) => {
 
   // 📝 Guardar el nuevo token en la base de datos
   await prisma.verificationToken.create({
-    data: { identifier: email, token, expires },
+    data: { email, token, expires },
   })
 
   // 🔗 Crear el enlace de verificación

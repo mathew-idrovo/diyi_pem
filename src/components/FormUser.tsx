@@ -44,7 +44,7 @@ export const FormUser = () => {
       }
 
       // 3️⃣ Redirigir después de enviar el correo
-      window.location.replace('/diyi')
+      window.location.replace('/dashboard')
     } catch (error: any) {
       setErrorMessage(error.message || 'An unexpected error occurred.')
     } finally {

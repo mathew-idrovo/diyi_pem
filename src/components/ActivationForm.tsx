@@ -1,10 +1,13 @@
 'use client'
+
 import { activateUser } from '@/actions'
 import { useState } from 'react'
 
 export function ActivationForm({ token }: { token: string }) {
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
+  const [phone, setPhone] = useState('')
+  const [cedula, setCedula] = useState('')
   const [disease, setDisease] = useState('')
   const [medication, setMedication] = useState('')
   const [message, setMessage] = useState('')
@@ -32,8 +35,15 @@ export function ActivationForm({ token }: { token: string }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setMessage('Procesando...')
-
-    const res = await activateUser(token, name, password, disease, medication)
+    const res = await activateUser(
+      token,
+      name,
+      password,
+      phone,
+      disease,
+      medication,
+      cedula
+    )
 
     if (res.success) {
       setMessage(res.success)
@@ -60,6 +70,22 @@ export function ActivationForm({ token }: { token: string }) {
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+
+      <label>Celular</label>
+      <input
+        type="number"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        required
+      />
+
+      <label>Cedula</label>
+      <input
+        type="number"
+        value={cedula}
+        onChange={(e) => setCedula(e.target.value)}
         required
       />
 

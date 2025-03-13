@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
+import { ActivationForm } from '@/components'
 
 export default async function DiyiPage({
   searchParams: searchParamsPromise, // 🔥 Convertimos `searchParams` en una promesa
@@ -31,28 +32,7 @@ export default async function DiyiPage({
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <h1 className="text-xl font-bold">Bienvenido, activa tu cuenta</h1>
-
-      <form className="bg-white p-6 shadow-md rounded-lg mt-5">
-        <input type="hidden" name="token" value={token} />
-
-        <input
-          type="text"
-          placeholder="Nombre"
-          className="border p-2 mb-3 w-full"
-        />
-        <input
-          type="password"
-          placeholder="Nueva contraseña"
-          className="border p-2 mb-3 w-full"
-        />
-
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Guardar
-        </button>
-      </form>
+      <ActivationForm token={token} />
     </div>
   )
 }

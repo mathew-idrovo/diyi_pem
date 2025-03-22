@@ -1,6 +1,7 @@
 'use server'
 import prisma from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+import { sendCardEmail } from './send-card-email'
 
 export const activateUser = async (
   token: string,
@@ -51,10 +52,11 @@ export const activateUser = async (
   })
 
   // 5️⃣ Generar un código de seguridad
+  const securityCodeValue = Math.random().toString(36).slice(-8).toUpperCase()
   const securityCode = await prisma.securityCode.create({
     data: {
       cardId: newCard.id,
-      code: Math.random().toString(36).slice(-8),
+      code: securityCodeValue,
       usedCount: 0,
       lastUsedAt: null,
     },
@@ -64,9 +66,11 @@ export const activateUser = async (
   await prisma.verificationToken.delete({
     where: { token },
   })
+  await sendCardEmail(verificationToken.email, cedula, securityCodeValue)
 
   return {
-    success: 'Cuenta activada correctamente',
-    securityCode: securityCode.code,
+    success:
+      'Cuenta activada correctamente. Se ha enviado un correo con tu tarjeta médica.',
+    securityCode: securityCodeValue,
   }
 }

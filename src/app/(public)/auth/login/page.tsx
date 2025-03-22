@@ -1,9 +1,10 @@
+import React from 'react'
 import { FormLogin } from '@/components'
 
 export default function LoginPage() {
   return (
-    <div className="flex justify-center items-center h-screen bg-green-300">
+    <main className="min-h-screen bg-gradient-to-br from-gray-900 to-black">
       <FormLogin />
-    </div>
+    </main>
   )
 }

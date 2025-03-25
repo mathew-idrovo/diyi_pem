@@ -1,4 +1,5 @@
 import { auth } from '@/auth.config'
+import { SideBar } from '@/components'
 import { redirect } from 'next/navigation'
 
 export default async function AdminLayout({
@@ -12,5 +13,13 @@ export default async function AdminLayout({
     redirect('/auth/login')
   }
 
-  return <>{children}</>
+  return (
+    <>
+      {' '}
+      <div className="flex flex-row">
+        <SideBar />
+        {children}{' '}
+      </div>
+    </>
+  )
 }

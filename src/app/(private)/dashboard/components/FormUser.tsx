@@ -13,18 +13,24 @@ type FormInputs = {
   phone: string
   cedula: string
 }
+interface FormUserProps {
+  onSuccess: () => void
+}
 
-export const FormUser = () => {
+export const FormUser = ({ onSuccess }: FormUserProps) => {
   const [errorMessage, setErrorMessage] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormInputs>()
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     setErrorMessage('')
+    setSuccessMessage('')
     setIsLoading(true)
     const { name, email, phone, cedula } = data
 
@@ -42,7 +48,8 @@ export const FormUser = () => {
       if (!emailResponse.message) {
         throw new Error(emailResponse.message || 'Error enviando email')
       }
-
+      setSuccessMessage('Cliente registrado y correo enviado correctamente')
+      reset()
       // 3️⃣ Redirigir después de enviar el correo
       window.location.replace('/dashboard')
     } catch (error: any) {

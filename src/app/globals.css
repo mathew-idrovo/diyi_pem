@@ -1,2 +1,36 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+
+body {
+  @apply bg-black text-white;
+}
+
+/* Glassmorphism effect */
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Añade esto a tu archivo globals.css para controlar el estilo de autocompletado */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: white !important;
+  caret-color: white;
+  box-shadow: 0 0 0 30px rgba(0, 0, 0, 0.5) inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Para Firefox */
+input:autofill {
+  -webkit-text-fill-color: white !important;
+  box-shadow: 0 0 0 30px rgba(0, 0, 0, 0.5) inset !important;
+}

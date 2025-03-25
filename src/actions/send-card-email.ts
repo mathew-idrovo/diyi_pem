@@ -10,7 +10,7 @@ export const sendCardEmail = async (
   try {
     // Crear la URL para el código QR
     const cardUrl = `${
-      process.env.NEXT_PUBLIC_APP_URL || 'http://10.255.255.254:3000'
+      process.env.NEXT_PUBLIC_APP_URL || 'http:// 192.168.0.10:3000'
     }/${cedula}?securitycode=${securityCode}`
 
     // Generar código QR como data URL

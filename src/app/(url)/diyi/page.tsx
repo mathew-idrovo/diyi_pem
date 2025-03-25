@@ -30,9 +30,8 @@ export default async function DiyiPage({
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-xl font-bold">Bienvenido, activa tu cuenta</h1>
+    <main className="min-h-screen bg-gradient-to-br from-gray-900 to-black">
       <ActivationForm token={token} />
-    </div>
+    </main>
   )
 }

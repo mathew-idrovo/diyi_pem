@@ -1,7 +1,9 @@
 'use client'
 
+import { logout } from '@/actions'
 import { LayoutDashboard } from 'lucide-react'
 import React, { useState } from 'react'
+import { IoLogOutOutline } from 'react-icons/io5'
 const menuItems = [
   {
     title: 'Dashboard',
@@ -46,6 +48,13 @@ export const SideBar = () => {
               </div>
             )
           })}
+          <button
+            className="flex w-full items-center mt-10 p-2 hover:bg-gray-100 rounded transition-all"
+            onClick={() => logout()}
+          >
+            <IoLogOutOutline size={30} />
+            <span className="ml-3 text-xl">Salir</span>
+          </button>
         </nav>
       </div>
     </aside>
